@@ -8,7 +8,7 @@ RESTCOUNTRIES_URL = "https://restcountries.com/v2/all?fields=name,capital,region
 EXCHANGE_URL = "https://open.er-api.com/v6/latest/USD"
 CACHE_IMAGE_PATH = os.path.join(settings.BASE_DIR, "cache", "summary.png")
 
-def fetch_json(url, timeout=10):
+def fetch_json(url, timeout=600):
     resp = requests.get(url, timeout=timeout)
     resp.raise_for_status()
     return resp.json()
