@@ -19,8 +19,13 @@ def generate_summary_image(total, top5, timestamp_iso):
     img = Image.new("RGB", (width, height), color=(215,0,200))
     draw = ImageDraw.Draw(img)
     title = f"Countries Summary"
-    font = ImageFont.truetype("arial.ttf", size=24)
-    font2 = ImageFont.truetype("arial.ttf", size=32)
+    try:
+        font = ImageFont.truetype("arial.ttf", 24)
+        font2 = ImageFont.truetype("arial.ttf", size=32)
+    except OSError:
+        font = ImageFont.load_default()
+        font2 = ImageFont.load_default()
+    
     draw.text((40,40), title, fill="black", font=font2)
     draw.text((40,90), f"Total countries: {total}", fill="blue", font=font)
     draw.text((40,120), f"Last refreshed: {timestamp_iso}", fill="blue", font=font)
