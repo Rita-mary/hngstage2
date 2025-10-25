@@ -31,3 +31,4 @@ def generate_summary_image(total, top5, timestamp_iso):
         draw.text((60,y), line, fill="blue", font=font)
         y += 36
     img.save(CACHE_IMAGE_PATH)
+    print("========================executed==============")

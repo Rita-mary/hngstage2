@@ -112,6 +112,7 @@ class RefreshCountriesView(APIView):
                 return Response({"message": "Refresh successful", "total_countries": total_countries, "last_refreshed_at": timestamp_iso}, status=status.HTTP_200_OK)
         except Exception:
             return Response({"error": "Request timed out, check your internet connection."})
+
 class CountryListView(generics.ListAPIView):
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
