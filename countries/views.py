@@ -14,7 +14,7 @@ from rest_framework import status, generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from datetime import timezone as dt_timezone
 from .models import Country
 from .serializers import CountrySerializer
 from .utils import fetch_json, generate_summary_image, CACHE_IMAGE_PATH, EXCHANGE_URL, RESTCOUNTRIES_URL
@@ -108,7 +108,7 @@ class RefreshCountriesView(APIView):
                 try:
                     total_countries = Country.objects.count()
                     top5_countries = Country.objects.order_by("-estimated_gdp")[:5]
-                    timestamp_iso = now.astimezone(dj_timezone.utc).isoformat()
+                    timestamp_iso = now.astimezone(dt_timezone.utc).isoformat()
                     generate_summary_image(total_countries, top5_countries, timestamp_iso)
                 except Exception as img_err:
                     # Log but don't rollback DB

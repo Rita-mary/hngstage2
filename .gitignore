@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 db.mysql
 cache/summary.png
+cache
