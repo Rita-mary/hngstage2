@@ -42,74 +42,76 @@ class RefreshCountriesView(APIView):
                 status=status.HTTP_503_SERVICE_UNAVAILABLE
             )
         
-        with transaction.atomic():
-            now = dj_timezone.now()
-            updated_objects = []
-            for item in countries_data:
-                name = item.get("name")
-                capital = item.get("capital")
-                region = item.get("region")
-                population = item.get("population") or 0
-                flag_url = item.get("flag")
-                currencies = item.get("currencies") or []
-                currency_code = None
-                exchange_rate = None
-                estimated_gdp = None
+        try:
+            with transaction.atomic():
+                now = dj_timezone.now()
+                updated_objects = []
+                for item in countries_data:
+                    name = item.get("name")
+                    capital = item.get("capital")
+                    region = item.get("region")
+                    population = item.get("population") or 0
+                    flag_url = item.get("flag")
+                    currencies = item.get("currencies") or []
+                    currency_code = None
+                    exchange_rate = None
+                    estimated_gdp = None
 
-                if len(currencies) > 0:
-                    currency = currencies[0]
-                    currency_code = currency.get("code")
-                    if currency_code:
-                        exchange_rate = rates.get(currency_code)
-                        if exchange_rate in (None, 0):
-                            exchange_rate = None
-                            estimated_gdp = None
+                    if len(currencies) > 0:
+                        currency = currencies[0]
+                        currency_code = currency.get("code")
+                        if currency_code:
+                            exchange_rate = rates.get(currency_code)
+                            if exchange_rate in (None, 0):
+                                exchange_rate = None
+                                estimated_gdp = None
+                            else:
+                                multiplier = random.randint(1000, 2000)
+                                try:
+                                    estimated_gdp = population * float(multiplier) / exchange_rate
+                                except Exception:
+                                    estimated_gdp = 0
+
                         else:
-                            multiplier = random.randint(1000, 2000)
-                            try:
-                                estimated_gdp = population * float(multiplier) / exchange_rate
-                            except Exception:
-                                estimated_gdp = 0
-
+                            currency_code = None
+                            exchange_rate = None
+                            estimated_gdp = 0
                     else:
                         currency_code = None
                         exchange_rate = None
                         estimated_gdp = 0
-                else:
-                    currency_code = None
-                    exchange_rate = None
-                    estimated_gdp = 0
 
-                obj = Country.objects.filter(name__iexact=name).first()
-                if obj:
-                    obj.capital = capital
-                    obj.region = region
-                    obj.population = population
-                    obj.currency_code = currency_code
-                    obj.exchange_rate = exchange_rate
-                    obj.estimated_gdp = estimated_gdp
-                    obj.flag_url = flag_url
-                    obj.last_refreshed_at=now
-                    obj.save()
-                else:
-                    obj = Country.objects.create(
-                        name=name,
-                        capital=capital,
-                        region=region,
-                        population=population,
-                        currency_code=currency_code,
-                        exchange_rate=exchange_rate,
-                        estimated_gdp=estimated_gdp,
-                        flag_url=flag_url,
-                        last_refreshed_at=now
-                    )
-                updated_objects.append(obj)
-            total_countries = Country.objects.count()
-            top5_countries = Country.objects.order_by('-estimated_gdp')[:5]
-            timestamp_iso = now.astimezone(timezone.utc).isoformat()
-            generate_summary_image(total_countries, top5_countries, timestamp_iso)
-            return Response({"message": "Refresh successful", "total_countries": total_countries, "last_refreshed_at": timestamp_iso}, status=status.HTTP_200_OK)
-        
+                    obj = Country.objects.filter(name__iexact=name).first()
+                    if obj:
+                        obj.capital = capital
+                        obj.region = region
+                        obj.population = population
+                        obj.currency_code = currency_code
+                        obj.exchange_rate = exchange_rate
+                        obj.estimated_gdp = estimated_gdp
+                        obj.flag_url = flag_url
+                        obj.last_refreshed_at=now
+                        obj.save()
+                    else:
+                        obj = Country.objects.create(
+                            name=name,
+                            capital=capital,
+                            region=region,
+                            population=population,
+                            currency_code=currency_code,
+                            exchange_rate=exchange_rate,
+                            estimated_gdp=estimated_gdp,
+                            flag_url=flag_url,
+                            last_refreshed_at=now
+                        )
+                    updated_objects.append(obj)
+                total_countries = Country.objects.count()
+                top5_countries = Country.objects.order_by('-estimated_gdp')[:5]
+                timestamp_iso = now.astimezone(timezone.utc).isoformat()
+                generate_summary_image(total_countries, top5_countries, timestamp_iso)
+                return Response({"message": "Refresh successful", "total_countries": total_countries, "last_refreshed_at": timestamp_iso}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({"error": "Request timed out, check your internet connection."})
 class CountryListView(generics.ListAPIView):
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
