@@ -4,9 +4,9 @@ from .views import (
 )
 
 urlpatterns = [
-    path('refresh', RefreshCountriesView.as_view(), name='countries-refresh'),
-    path('', CountryListView.as_view(), name='countries-list'),
-    path('image', ImageView.as_view(), name='countries-image'),
+    path('countries/refresh', RefreshCountriesView.as_view(), name='countries-refresh'),
+    path('countries', CountryListView.as_view(), name='countries-list'),
+    path('countries/image', ImageView.as_view(), name='countries-image'),
     path('status', StatusView.as_view(), name='countries-status'),
-    path('<str:name>', CountryDetailView.as_view(), name='country-detail'),
+    path('countries/<str:name>', CountryDetailView.as_view(), name='country-detail'),
 ]

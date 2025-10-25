@@ -22,8 +22,10 @@ from .utils import fetch_json, generate_summary_image, CACHE_IMAGE_PATH, EXCHANG
 
 
 class RefreshCountriesView(APIView):
+    serializer_class = CountrySerializer
 
     def post(self, request):
+
         try:
             countries_data = fetch_json(RESTCOUNTRIES_URL)
         except Exception:
@@ -87,6 +89,7 @@ class RefreshCountriesView(APIView):
                     obj.exchange_rate = exchange_rate
                     obj.estimated_gdp = estimated_gdp
                     obj.flag_url = flag_url
+                    obj.last_refreshed_at=now
                     obj.save()
                 else:
                     obj = Country.objects.create(
@@ -97,7 +100,8 @@ class RefreshCountriesView(APIView):
                         currency_code=currency_code,
                         exchange_rate=exchange_rate,
                         estimated_gdp=estimated_gdp,
-                        flag_url=flag_url
+                        flag_url=flag_url,
+                        last_refreshed_at=now
                     )
                 updated_objects.append(obj)
             total_countries = Country.objects.count()
