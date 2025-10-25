@@ -113,6 +113,7 @@ class RefreshCountriesView(APIView):
                 except Exception as img_err:
                     # Log but don't rollback DB
                     print("==========Image generation failed:", img_err)
+                    return Response({"error": img_err}, status=status.HTTP_200_OK)
                 return Response({"message": "Refresh successful", "total_countries": total_countries, "last_refreshed_at": timestamp_iso}, status=status.HTTP_200_OK)
         except Exception:
             return Response({"error": "Request timed out, check your internet connection."})
