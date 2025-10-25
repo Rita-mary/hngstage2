@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG") 
 
-ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS", default="localhost").split(",")]
+# ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS", default="localhost").split(",")]
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -35,7 +35,16 @@ ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS", default="localhost").split(",")]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "http://localhost:3000",
+    "http://127.0.0.1:8000",
+    "https://hngstage2-production.up.railway.app",
+    "hngstage2-production.up.railway.app"
+]
+
 APPEND_SLASH = False
 
 
@@ -173,11 +182,11 @@ REST_FRAMEWORK['EXCEPTION_HANDLER'] = 'hngstage2.exceptions.custom_exception_han
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:8000",
-    # "https://rita-mary-stringanalyzer.up.railway.app"
+    "https://hngstage2-production.up.railway.app",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:8000",
-    # "https://rita-mary-stringanalyzer.up.railway.app"
+    "https://hngstage2-production.up.railway.app",
 ]
