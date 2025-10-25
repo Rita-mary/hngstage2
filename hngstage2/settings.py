@@ -32,8 +32,6 @@ DEBUG = os.getenv("DEBUG")
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 # ALLOWED_HOSTS = []
 ALLOWED_HOSTS = [
