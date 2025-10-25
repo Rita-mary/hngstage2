@@ -105,10 +105,14 @@ class RefreshCountriesView(APIView):
                             last_refreshed_at=now
                         )
                     updated_objects.append(obj)
-                total_countries = Country.objects.count()
-                top5_countries = Country.objects.order_by('-estimated_gdp')[:5]
-                timestamp_iso = now.astimezone(timezone.utc).isoformat()
-                generate_summary_image(total_countries, top5_countries, timestamp_iso)
+                try:
+                    total_countries = Country.objects.count()
+                    top5_countries = Country.objects.order_by("-estimated_gdp")[:5]
+                    timestamp_iso = now.astimezone(dj_timezone.utc).isoformat()
+                    generate_summary_image(total_countries, top5_countries, timestamp_iso)
+                except Exception as img_err:
+                    # Log but don't rollback DB
+                    print("==========Image generation failed:", img_err)
                 return Response({"message": "Refresh successful", "total_countries": total_countries, "last_refreshed_at": timestamp_iso}, status=status.HTTP_200_OK)
         except Exception:
             return Response({"error": "Request timed out, check your internet connection."})
